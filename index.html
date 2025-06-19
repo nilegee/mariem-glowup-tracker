@@ -57,6 +57,20 @@
   label.upload-btn:hover {
     background: #91397d;
   }
+  .save-week-btn {
+    margin-left: 10px;
+    background: #7a378b;
+    color: white;
+    border: none;
+    padding: 6px 14px;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background 0.3s ease;
+  }
+  .save-week-btn:hover {
+    background: #5a2a57;
+  }
   img.preview {
     max-width: 100%;
     max-height: 250px;
@@ -96,6 +110,14 @@
     font-size: 0.9rem;
     color: #5a2a57aa;
   }
+  .upload-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+  }
 </style>
 </head>
 <body>
@@ -103,10 +125,9 @@
 <header>Mariem’s 12-Week Endolift Glow-Up Tracker ✨</header>
 
 <form id="trackerForm">
-  <!-- 12 weeks -->
   <div id="weeksContainer"></div>
 
-  <button type="button" class="save-btn" onclick="saveData()">Save Progress 💾</button>
+  <button type="button" class="save-btn" onclick="saveData()">Save All Progress 💾</button>
 </form>
 
 <footer>Keep shining, Mariem! 💖</footer>
@@ -114,7 +135,6 @@
 <script>
   const weeksContainer = document.getElementById('weeksContainer');
 
-  // Custom motivational quotes for transformation journey
   const defaultQuotes = [
     "Every change begins with courage — your glow starts now.",
     "Renewed inside and out, your beauty is unfolding.",
@@ -130,12 +150,10 @@
     "You are radiant, resilient, and unstoppable."
   ];
 
-  // Format date like: 18 Jun
   function formatDate(date) {
     return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
   }
 
-  // Get date range for each week based on start date and week number
   function getWeekDateRange(startDate, weekNumber) {
     const start = new Date(startDate);
     start.setDate(start.getDate() + (weekNumber - 1) * 7);
@@ -144,22 +162,23 @@
     return `${formatDate(start)} – ${formatDate(end)}`;
   }
 
-  // Create 12 weeks inputs with real date ranges
   for(let i=1; i<=12; i++) {
     const range = getWeekDateRange(new Date('2025-06-18'), i);
     const weekDiv = document.createElement('div');
     weekDiv.className = 'week-container';
     weekDiv.innerHTML = `
       <div class="week-title">Week ${i} (${range})</div>
-      <label class="upload-btn" for="photo${i}">Upload Photo 📸</label>
-      <input type="file" id="photo${i}" accept="image/*" onchange="previewImage(event, ${i})" />
+      <div class="upload-row">
+        <label class="upload-btn" for="photo${i}">Upload Photo 📸</label>
+        <input type="file" id="photo${i}" accept="image/*" onchange="previewImage(event, ${i})" />
+        <button type="button" class="save-week-btn" onclick="saveWeek(${i})">Save This Week 💾</button>
+      </div>
       <img id="preview${i}" class="preview" src="" alt="No photo yet" style="display:none;" />
       <textarea class="quote" id="quote${i}" rows="2" placeholder="Write your motivational quote or use this:">${defaultQuotes[i-1]}</textarea>
     `;
     weeksContainer.appendChild(weekDiv);
   }
 
-  // Image preview function
   function previewImage(event, week) {
     const preview = document.getElementById('preview' + week);
     const file = event.target.files[0];
@@ -176,7 +195,23 @@
     }
   }
 
-  // Save data locally
+  function saveWeek(week) {
+    let data = JSON.parse(localStorage.getItem('mariemGlowUpData')) || [];
+
+    const quoteInput = document.getElementById('quote' + week);
+    const imgPreview = document.getElementById('preview' + week);
+    const imgSrc = imgPreview.src || '';
+
+    const index = data.findIndex(d => d.week === week);
+    const entry = { week: week, photo: imgSrc, quote: quoteInput.value };
+
+    if (index > -1) data[index] = entry;
+    else data.push(entry);
+
+    localStorage.setItem('mariemGlowUpData', JSON.stringify(data));
+    alert(`Week ${week} saved! 💾`);
+  }
+
   function saveData() {
     let data = [];
     for(let i=1; i<=12; i++) {
@@ -191,10 +226,9 @@
       });
     }
     localStorage.setItem('mariemGlowUpData', JSON.stringify(data));
-    alert('Progress saved! You can close the page and come back anytime.');
+    alert('All progress saved! 💾');
   }
 
-  // Load data if exists
   function loadData() {
     const saved = localStorage.getItem('mariemGlowUpData');
     if(saved) {
