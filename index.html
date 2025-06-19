@@ -90,6 +90,27 @@
     color: #5a2a57;
     background: #fff0f6;
   }
+  .weight-input-container {
+    margin-top: 8px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .weight-input-container label {
+    font-weight: 600;
+    color: #5a2a57;
+    min-width: 80px;
+  }
+  .weight-input-container input[type="number"] {
+    flex-grow: 1;
+    padding: 6px;
+    border-radius: 8px;
+    border: 1px solid #b85c9e;
+    background: #fff0f6;
+    color: #5a2a57;
+    font-size: 1rem;
+  }
   .save-btn {
     background: #5a2a57;
     color: #fff0f6;
@@ -175,6 +196,10 @@
       </div>
       <img id="preview${i}" class="preview" src="" alt="No photo yet" style="display:none;" />
       <textarea class="quote" id="quote${i}" rows="2" placeholder="Write your motivational quote or use this:">${defaultQuotes[i-1]}</textarea>
+      <div class="weight-input-container">
+        <label for="weight${i}">Weight (kg):</label>
+        <input type="number" id="weight${i}" min="20" max="300" step="0.1" />
+      </div>
     `;
     weeksContainer.appendChild(weekDiv);
   }
@@ -200,10 +225,12 @@
 
     const quoteInput = document.getElementById('quote' + week);
     const imgPreview = document.getElementById('preview' + week);
+    const weightInput = document.getElementById('weight' + week);
     const imgSrc = imgPreview.src || '';
+    const weightVal = weightInput.value.trim();
 
     const index = data.findIndex(d => d.week === week);
-    const entry = { week: week, photo: imgSrc, quote: quoteInput.value };
+    const entry = { week: week, photo: imgSrc, quote: quoteInput.value, weight: weightVal };
 
     if (index > -1) data[index] = entry;
     else data.push(entry);
@@ -217,12 +244,15 @@
     for(let i=1; i<=12; i++) {
       const quoteInput = document.getElementById('quote' + i);
       const imgPreview = document.getElementById('preview' + i);
+      const weightInput = document.getElementById('weight' + i);
       const imgSrc = imgPreview.src || '';
+      const weightVal = weightInput.value.trim();
 
       data.push({
         week: i,
         photo: imgSrc,
-        quote: quoteInput.value
+        quote: quoteInput.value,
+        weight: weightVal
       });
     }
     localStorage.setItem('mariemGlowUpData', JSON.stringify(data));
@@ -240,6 +270,9 @@
           preview.style.display = 'block';
         }
         document.getElementById('quote' + item.week).value = item.quote || '';
+        if(item.weight !== undefined) {
+          document.getElementById('weight' + item.week).value = item.weight;
+        }
       });
     }
   }
