@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<title>Mariem’s 12-Week Glow-Up Tracker ✨</title>
+<title>Mariem’s 12-Week Glow-Up Tracker + Organizer ✨</title>
 
 <!-- PWA manifest and theme color -->
 <link rel="manifest" href="manifest.json" />
@@ -16,9 +16,10 @@
     background: #fff0f6;
     color: #5a2a57;
     margin: 0; padding: 0;
-    display: flex; flex-direction: column; align-items: center;
     min-height: 100vh;
-    line-height: 1.5;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
   }
   header {
     padding: 20px 10px;
@@ -27,6 +28,7 @@
     text-align: center;
     letter-spacing: 0.05em;
   }
+  /* --- Glow-Up Tracker Styles --- */
   .week-container {
     width: 95vw; max-width: 400px;
     background: linear-gradient(135deg, #fce4f2 0%, #f9d5e5 100%);
@@ -163,12 +165,6 @@
     box-shadow: 0 0 8px 2px #7d497799;
     outline: none;
   }
-  footer {
-    text-align: center;
-    padding: 10px 5px;
-    font-size: 0.9rem;
-    color: #5a2a57aa;
-  }
   .upload-row {
     display: flex;
     align-items: center;
@@ -176,6 +172,142 @@
     gap: 10px;
     margin-bottom: 10px;
     flex-wrap: wrap;
+  }
+
+  /* --- Organizer Styles --- */
+  .tab-container {
+    width: 95vw; max-width: 400px;
+    background: #f9d5e5;
+    border-radius: 15px;
+    box-shadow: 0 6px 12px rgba(90,42,87,0.3);
+    margin-bottom: 30px;
+    padding: 15px;
+  }
+  .tabs {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 10px;
+  }
+  .tab-button {
+    flex-grow: 1;
+    background: #b85c9e;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 0;
+    cursor: pointer;
+    border-radius: 20px 20px 0 0;
+    transition: background 0.3s ease;
+    letter-spacing: 0.05em;
+  }
+  .tab-button:hover, .tab-button:focus {
+    background: #91397d;
+    outline: none;
+  }
+  .tab-button.active {
+    background: #5a2a57;
+  }
+  .tab-content {
+    background: #fff0f6;
+    border-radius: 0 20px 20px 20px;
+    padding: 10px;
+    min-height: 200px;
+    max-height: 300px;
+    overflow-y: auto;
+  }
+  .list-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: white;
+    border-radius: 10px;
+    margin-bottom: 8px;
+    padding: 8px 12px;
+    box-shadow: 0 2px 5px rgba(90,42,87,0.1);
+  }
+  .list-item input[type="text"] {
+    border: none;
+    background: transparent;
+    flex-grow: 1;
+    font-size: 1rem;
+    color: #5a2a57;
+  }
+  .list-item input[type="text"]:focus {
+    outline: none;
+  }
+  .list-item button {
+    background: transparent;
+    border: none;
+    color: #b85c9e;
+    font-weight: 700;
+    font-size: 1.2rem;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.3s ease;
+  }
+  .list-item button:hover {
+    color: #91397d;
+  }
+  .add-item-btn {
+    width: 100%;
+    background: #b85c9e;
+    border: none;
+    color: white;
+    font-weight: 600;
+    padding: 10px 0;
+    border-radius: 20px;
+    cursor: pointer;
+    margin-top: 8px;
+    letter-spacing: 0.05em;
+    transition: background 0.3s ease;
+  }
+  .add-item-btn:hover, .add-item-btn:focus {
+    background: #91397d;
+    outline: none;
+  }
+
+  /* Floating Action Button */
+  .fab {
+    position: fixed;
+    bottom: 80px; /* above save button */
+    right: 20px;
+    width: 56px;
+    height: 56px;
+    background: #b85c9e;
+    border-radius: 50%;
+    box-shadow: 0 4px 12px rgba(90, 42, 87, 0.4);
+    color: white;
+    font-size: 28px;
+    line-height: 56px;
+    text-align: center;
+    cursor: pointer;
+    user-select: none;
+    transition: background 0.3s ease;
+    z-index: 110;
+  }
+  .fab:hover, .fab:focus {
+    background: #91397d;
+    outline: none;
+  }
+
+  /* Force Refresh Button */
+  #forceRefreshBtn {
+    position: fixed;
+    bottom: 150px;
+    right: 20px;
+    padding: 10px 15px;
+    background: #b85c9e;
+    color: white;
+    border: none;
+    border-radius: 20px;
+    cursor: pointer;
+    z-index: 120;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+  }
+  #forceRefreshBtn:hover, #forceRefreshBtn:focus {
+    background: #91397d;
+    outline: none;
   }
 </style>
 </head>
@@ -189,11 +321,25 @@
   <button type="button" class="save-btn" onclick="saveData()">Save All Progress 💾</button>
 </form>
 
+<div class="tab-container" id="organizerContainer">
+  <div class="tabs" role="tablist">
+    <button class="tab-button active" role="tab" aria-selected="true" aria-controls="todoTab" id="todoTabBtn">To-Do</button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="shoppingTab" id="shoppingTabBtn">Shopping</button>
+    <button class="tab-button" role="tab" aria-selected="false" aria-controls="placesTab" id="placesTabBtn">Places to Go</button>
+  </div>
+  <div id="todoTab" class="tab-content" role="tabpanel" aria-labelledby="todoTabBtn"></div>
+  <div id="shoppingTab" class="tab-content" role="tabpanel" aria-labelledby="shoppingTabBtn" hidden></div>
+  <div id="placesTab" class="tab-content" role="tabpanel" aria-labelledby="placesTabBtn" hidden></div>
+</div>
+
+<div class="fab" id="fabOrganizer" title="Open Organizer">📋</div>
+<button id="forceRefreshBtn" title="Force Reload Latest Version">Force Refresh 🔄</button>
+
 <footer>Keep shining, Mariem! 💖</footer>
 
 <script>
+  // === Glow-Up Tracker Logic ===
   const weeksContainer = document.getElementById('weeksContainer');
-
   const defaultQuotes = [
     "Every change begins with courage — your glow starts now.",
     "Renewed inside and out, your beauty is unfolding.",
@@ -208,11 +354,9 @@
     "Trust the process; your reflection will thank you.",
     "You are radiant, resilient, and unstoppable."
   ];
-
   function formatDate(date) {
     return date.toLocaleDateString(undefined, { day: 'numeric', month: 'short' });
   }
-
   function getWeekDateRange(startDate, weekNumber) {
     const start = new Date(startDate);
     start.setDate(start.getDate() + (weekNumber - 1) * 7);
@@ -220,7 +364,6 @@
     end.setDate(end.getDate() + 6);
     return `${formatDate(start)} – ${formatDate(end)}`;
   }
-
   for(let i=1; i<=12; i++) {
     const range = getWeekDateRange(new Date('2025-06-18'), i);
     const weekDiv = document.createElement('div');
@@ -241,7 +384,6 @@
     `;
     weeksContainer.appendChild(weekDiv);
   }
-
   function previewImage(event, week) {
     const preview = document.getElementById('preview' + week);
     const file = event.target.files[0];
@@ -257,26 +399,20 @@
       preview.style.display = 'none';
     }
   }
-
   function saveWeek(week) {
     let data = JSON.parse(localStorage.getItem('mariemGlowUpData')) || [];
-
     const quoteInput = document.getElementById('quote' + week);
     const imgPreview = document.getElementById('preview' + week);
     const weightInput = document.getElementById('weight' + week);
     const imgSrc = imgPreview.src || '';
     const weightVal = weightInput.value.trim();
-
     const index = data.findIndex(d => d.week === week);
     const entry = { week: week, photo: imgSrc, quote: quoteInput.value, weight: weightVal };
-
     if (index > -1) data[index] = entry;
     else data.push(entry);
-
     localStorage.setItem('mariemGlowUpData', JSON.stringify(data));
     alert(`Week ${week} saved! 💾`);
   }
-
   function saveData() {
     let data = [];
     for(let i=1; i<=12; i++) {
@@ -285,7 +421,6 @@
       const weightInput = document.getElementById('weight' + i);
       const imgSrc = imgPreview.src || '';
       const weightVal = weightInput.value.trim();
-
       data.push({
         week: i,
         photo: imgSrc,
@@ -296,7 +431,6 @@
     localStorage.setItem('mariemGlowUpData', JSON.stringify(data));
     alert('All progress saved! 💾');
   }
-
   function loadData() {
     const saved = localStorage.getItem('mariemGlowUpData');
     if(saved) {
@@ -314,37 +448,111 @@
       });
     }
   }
-
   loadData();
 
-  // Daily motivational messages
-  const dailyMessages = [
-    "Wake Mariem, rise and shine! ☀️ Ghassan loves you!",
-    "Good morning, beautiful! Time to glow up! ✨",
-    "New day, new progress. Let’s do this, Mariem! 💪",
-    "Smile, breathe, and sparkle today! 🌸",
-    "Every day is a fresh start. You got this! 💖",
-    "Keep shining, queen! Your journey inspires. 👑",
-    "Rise up, glow up, show up! 🚀",
-    "Hello sunshine! Let today be amazing. 🌞",
-    "You’re unstoppable, Mariem! Keep going! 🔥",
-    "Good vibes only — let’s make today great! ✨"
-  ];
-
-  // Show daily message once per day
-  function showDailyMessage() {
-    const lastShown = localStorage.getItem('lastMessageDate');
-    const today = new Date().toDateString();
-
-    if (lastShown !== today) {
-      const msg = dailyMessages[Math.floor(Math.random() * dailyMessages.length)];
-      alert(msg);
-      localStorage.setItem('lastMessageDate', today);
+  // === Organizer Logic ===
+  const organizerLists = {
+    todo: [],
+    shopping: [],
+    places: []
+  };
+  function saveOrganizer() {
+    localStorage.setItem('mariemOrganizerData', JSON.stringify(organizerLists));
+  }
+  function loadOrganizer() {
+    const saved = localStorage.getItem('mariemOrganizerData');
+    if(saved) {
+      Object.assign(organizerLists, JSON.parse(saved));
     }
   }
+  function renderList(listName) {
+    const container = document.getElementById(listName + 'Tab');
+    container.innerHTML = '';
+    organizerLists[listName].forEach((item, index) => {
+      const div = document.createElement('div');
+      div.className = 'list-item';
+      div.innerHTML = `
+        <input type="text" value="${item}" data-index="${index}" data-list="${listName}" />
+        <button aria-label="Delete item" data-index="${index}" data-list="${listName}">&times;</button>
+      `;
+      container.appendChild(div);
+    });
+    const addBtn = document.createElement('button');
+    addBtn.className = 'add-item-btn';
+    addBtn.textContent = '+ Add Item';
+    addBtn.setAttribute('aria-label', 'Add new item to ' + listName);
+    addBtn.onclick = () => {
+      organizerLists[listName].push('');
+      renderList(listName);
+      saveOrganizer();
+    };
+    container.appendChild(addBtn);
+    container.querySelectorAll('input[type="text"]').forEach(input => {
+      input.oninput = (e) => {
+        const idx = e.target.getAttribute('data-index');
+        const list = e.target.getAttribute('data-list');
+        organizerLists[list][idx] = e.target.value;
+        saveOrganizer();
+      };
+    });
+    container.querySelectorAll('button[data-index]').forEach(btn => {
+      btn.onclick = (e) => {
+        const idx = e.target.getAttribute('data-index');
+        const list = e.target.getAttribute('data-list');
+        organizerLists[list].splice(idx, 1);
+        renderList(list);
+        saveOrganizer();
+      };
+    });
+  }
+  function switchTab(e) {
+    const buttons = document.querySelectorAll('.tab-button');
+    const contents = document.querySelectorAll('.tab-content');
+    buttons.forEach(btn => {
+      btn.classList.remove('active');
+      btn.setAttribute('aria-selected', 'false');
+    });
+    contents.forEach(content => content.hidden = true);
+    e.target.classList.add('active');
+    e.target.setAttribute('aria-selected', 'true');
+    document.getElementById(e.target.getAttribute('aria-controls')).hidden = false;
+  }
+  document.querySelectorAll('.tab-button').forEach(btn => {
+    btn.addEventListener('click', switchTab);
+  });
+  loadOrganizer();
+  renderList('todo');
+  renderList('shopping');
+  renderList('places');
 
-  showDailyMessage();
+  // FAB organizer toggle logic with smooth auto-scroll
+  const fab = document.getElementById('fabOrganizer');
+  const organizer = document.getElementById('organizerContainer');
+  fab.addEventListener('click', () => {
+    if (organizer.style.display === 'none' || !organizer.style.display) {
+      organizer.style.display = 'block';
+      fab.textContent = '✖'; // close icon
+      organizer.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } else {
+      organizer.style.display = 'none';
+      fab.textContent = '📋'; // list icon
+    }
+  });
+  // Initially hide organizer to save space
+  organizer.style.display = 'none';
 
+  // Force Refresh Button Logic
+  document.getElementById('forceRefreshBtn').addEventListener('click', () => {
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.getRegistrations().then(registrations => {
+        registrations.forEach(reg => reg.unregister());
+        alert('Service Worker unregistered. Reloading fresh page...');
+        window.location.reload(true); // true forces reload from server in some browsers
+      });
+    } else {
+      window.location.reload(true);
+    }
+  });
 </script>
 
 <!-- Register service worker for offline caching and update notification -->
@@ -352,7 +560,6 @@
   if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('service-worker.js').then(reg => {
       console.log('Service Worker registered');
-
       reg.addEventListener('updatefound', () => {
         const newWorker = reg.installing;
         newWorker.addEventListener('statechange', () => {
