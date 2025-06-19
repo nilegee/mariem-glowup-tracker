@@ -1,4 +1,4 @@
-const CACHE_NAME = 'mariem-glowup-cache-v2'; // updated cache version to force refresh
+const CACHE_NAME = 'mariem-glowup-cache-v5'; // bump this each update to force refresh
 const urlsToCache = [
   './',
   './index.html',
@@ -7,7 +7,7 @@ const urlsToCache = [
   './icon-512.png'
 ];
 
-// Install Service Worker and cache files, activate immediately
+// Install and activate new service worker immediately
 self.addEventListener('install', event => {
   self.skipWaiting();
   event.waitUntil(
@@ -16,7 +16,7 @@ self.addEventListener('install', event => {
   );
 });
 
-// Activate Service Worker and clean old caches, take control of clients immediately
+// Remove old caches and claim clients immediately
 self.addEventListener('activate', event => {
   event.waitUntil(
     caches.keys().then(cacheNames =>
@@ -28,7 +28,7 @@ self.addEventListener('activate', event => {
   );
 });
 
-// Fetch requests - serve from cache first, fallback to network
+// Serve cached content, fallback to network
 self.addEventListener('fetch', event => {
   event.respondWith(
     caches.match(event.request)

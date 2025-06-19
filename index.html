@@ -18,6 +18,7 @@
     margin: 0; padding: 0;
     display: flex; flex-direction: column; align-items: center;
     min-height: 100vh;
+    line-height: 1.5;
   }
   header {
     padding: 20px 10px;
@@ -28,12 +29,17 @@
   }
   .week-container {
     width: 95vw; max-width: 400px;
-    background: #f9d5e5;
+    background: linear-gradient(135deg, #fce4f2 0%, #f9d5e5 100%);
     margin-bottom: 15px;
     border-radius: 15px;
-    box-shadow: 0 6px 12px rgb(90 42 87 / 0.3);
+    box-shadow: 0 6px 12px rgba(90, 42, 87, 0.3);
     padding: 15px;
     display: flex; flex-direction: column; align-items: center;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+  .week-container:hover {
+    box-shadow: 0 10px 20px rgba(90, 42, 87, 0.4);
+    transform: translateY(-5px);
   }
   .week-title {
     font-weight: 600;
@@ -52,10 +58,14 @@
     cursor: pointer;
     user-select: none;
     margin-bottom: 10px;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    letter-spacing: 0.05em;
   }
-  label.upload-btn:hover {
+  label.upload-btn:hover,
+  label.upload-btn:focus {
     background: #91397d;
+    box-shadow: 0 0 8px 2px #b85c9e99;
+    outline: none;
   }
   .save-week-btn {
     margin-left: 10px;
@@ -66,18 +76,27 @@
     border-radius: 20px;
     cursor: pointer;
     font-size: 0.9rem;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    letter-spacing: 0.05em;
   }
-  .save-week-btn:hover {
+  .save-week-btn:hover,
+  .save-week-btn:focus {
     background: #5a2a57;
+    box-shadow: 0 0 8px 2px #5a2a5799;
+    outline: none;
   }
   img.preview {
     max-width: 100%;
     max-height: 250px;
     border-radius: 15px;
-    box-shadow: 0 4px 10px rgb(90 42 87 / 0.2);
+    box-shadow: 0 4px 10px rgba(90, 42, 87, 0.2);
     margin-bottom: 10px;
     object-fit: cover;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+  }
+  img.preview[src]:not([src=""]) {
+    opacity: 1;
   }
   textarea.quote {
     width: 100%;
@@ -89,6 +108,12 @@
     font-family: 'Poppins', sans-serif;
     color: #5a2a57;
     background: #fff0f6;
+    transition: box-shadow 0.3s ease;
+  }
+  textarea.quote:focus {
+    outline: none;
+    box-shadow: 0 0 8px 2px #b85c9e99;
+    border-color: #b85c9e;
   }
   .weight-input-container {
     margin-top: 8px;
@@ -110,6 +135,12 @@
     background: #fff0f6;
     color: #5a2a57;
     font-size: 1rem;
+    transition: box-shadow 0.3s ease;
+  }
+  .weight-input-container input[type="number"]:focus {
+    outline: none;
+    box-shadow: 0 0 8px 2px #b85c9e99;
+    border-color: #b85c9e;
   }
   .save-btn {
     background: #5a2a57;
@@ -120,10 +151,17 @@
     border-radius: 30px;
     cursor: pointer;
     margin: 20px 0 40px;
-    transition: background 0.3s ease;
+    transition: background 0.3s ease, box-shadow 0.3s ease;
+    position: sticky;
+    bottom: 10px;
+    z-index: 10;
+    letter-spacing: 0.05em;
   }
-  .save-btn:hover {
+  .save-btn:hover,
+  .save-btn:focus {
     background: #7d4977;
+    box-shadow: 0 0 8px 2px #7d497799;
+    outline: none;
   }
   footer {
     text-align: center;
@@ -278,14 +316,56 @@
   }
 
   loadData();
+
+  // Daily motivational messages
+  const dailyMessages = [
+    "Wake Mariem, rise and shine! ☀️ Ghassan loves you!",
+    "Good morning, beautiful! Time to glow up! ✨",
+    "New day, new progress. Let’s do this, Mariem! 💪",
+    "Smile, breathe, and sparkle today! 🌸",
+    "Every day is a fresh start. You got this! 💖",
+    "Keep shining, queen! Your journey inspires. 👑",
+    "Rise up, glow up, show up! 🚀",
+    "Hello sunshine! Let today be amazing. 🌞",
+    "You’re unstoppable, Mariem! Keep going! 🔥",
+    "Good vibes only — let’s make today great! ✨"
+  ];
+
+  // Show daily message once per day
+  function showDailyMessage() {
+    const lastShown = localStorage.getItem('lastMessageDate');
+    const today = new Date().toDateString();
+
+    if (lastShown !== today) {
+      const msg = dailyMessages[Math.floor(Math.random() * dailyMessages.length)];
+      alert(msg);
+      localStorage.setItem('lastMessageDate', today);
+    }
+  }
+
+  showDailyMessage();
+
 </script>
 
-<!-- Register service worker for offline caching -->
+<!-- Register service worker for offline caching and update notification -->
 <script>
   if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('service-worker.js')
-      .then(() => console.log('Service Worker registered'))
-      .catch(err => console.log('Service Worker registration failed:', err));
+    navigator.serviceWorker.register('service-worker.js').then(reg => {
+      console.log('Service Worker registered');
+
+      reg.addEventListener('updatefound', () => {
+        const newWorker = reg.installing;
+        newWorker.addEventListener('statechange', () => {
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            if (confirm('✨ New version available! Refresh now to update your tracker?')) {
+              window.location.reload();
+            }
+          }
+        });
+      });
+    }).catch(err => {
+      console.log('Service Worker registration failed:', err);
+    });
   }
 </script>
 
